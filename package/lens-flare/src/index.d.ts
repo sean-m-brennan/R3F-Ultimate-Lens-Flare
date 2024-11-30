@@ -1,1 +1,1 @@
-declare module '@andersonmancini/ lens-flare'
+declare module '@andersonmancini/lens-flare'
