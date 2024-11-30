@@ -95,7 +95,7 @@ export class LensFlareEffect extends Effect {
         ['flareShape', new Uniform(flareShape)],
         ['animated', new Uniform(animated)],
         ['anamorphic', new Uniform(anamorphic)],
-        ['colorGain', new Uniform(colorGain)],
+        ['colorGain', new Uniform(new Vector3(colorGain.r, colorGain.g, colorGain.b))],
         ['lensDirtTexture', new Uniform(lensDirtTexture)],
         ['haloScale', new Uniform(haloScale)],
         ['secondaryGhosts', new Uniform(secondaryGhosts)],
@@ -131,8 +131,19 @@ function Effects({
   ghostScale = 0.5,
   starBurst = true,
   enabled = true,
-  opacity = 1.0
+  opacity = 1.0,
+  move = () => {},
 }) {
+  if (typeof colorGain === "string") {
+    colorGain = new Color(colorGain);
+  }
+  if (colorGain instanceof Color) {
+    colorGain = { r: colorGain.r, g: colorGain.g, b: colorGain.b };
+  }
+  if (colorGain.r <= 1 && colorGain.g <= 1 && colorGain.b <= 1) {
+    colorGain = { r: Math.floor(colorGain.r * 255), g: Math.floor(colorGain.g * 255), b: Math.floor(colorGain.b * 255) };
+  }
+
   const lensRef = useRef();
 
   const LensFlare = wrapEffect(LensFlareEffect);
@@ -152,6 +163,12 @@ function Effects({
         lensRef.current.uniforms.get('lensPosition').value.y = mouse.y
         easing.damp(lensRef.current.uniforms.get('opacity'), 'value', 0.0, 0.07, delta)
       } else {
+        if (move) {
+          const position = move()
+          if (position)
+            screenPosition.set(position.x, position.y, position.z)
+        }
+
         projectedPosition = screenPosition.clone()
         projectedPosition.project(camera)
 

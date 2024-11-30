@@ -5,7 +5,7 @@
   "module": "dist/esm/index.js",
   "scripts": {
     "dev": "node ./esbuild.dev.js",
-    "build": "node ./esbuild.build.js",
+    "build": "node ./esbuild.build.js && cp ./src/index.d.ts ./dist/",
     "clean": "rm -rf ./dist",
     "prebuild": "npm run clean",
     "predev": "npm run clean"
